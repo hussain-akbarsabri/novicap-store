@@ -1,0 +1,18 @@
+
+[
+  {
+    "name": "2-for-1",
+    "product": "VOUCHER",
+    "active": true
+  },
+  {
+    "name": "bulk-purchase",
+    "product": "TSHIRT",
+    "active": true
+  },
+  {
+    "name": "10%-OFF",
+    "product": "MUG",
+    "active": false
+  }
+]
