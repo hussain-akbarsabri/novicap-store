@@ -1,4 +1,6 @@
-require "json"
+# frozen_string_literal: true
+
+require 'json'
 
 class Checkout
   PRODUCTS = 'products'
@@ -19,14 +21,14 @@ class Checkout
   end
 
   def total
-    puts discount_price()
+    puts discount_price
   end
 
   private
 
   def fetch_api_data(file_name)
     products_data_file = File.open "data/#{file_name}.json"
-    JSON.load(products_data_file) || []
+    JSON.parse(products_data_file) || []
   end
 
   def active_discounts(discounts)
@@ -38,23 +40,24 @@ class Checkout
     grouped_cart_items = @cart.group_by { |cart_item| cart_item['code'] }
     return false if grouped_cart_items.empty?
 
-    grouped_cart_items.keys.each do |cart_item_name|
+    grouped_cart_items.each_key do |cart_item_name|
       products = grouped_cart_items[cart_item_name]
       discount = @discounts.detect { |discount| discount['product'] == cart_item_name }
       discount_price << if discount
-        discounted_price(discount, products)
-      else
-        products.map { |product| product['price'] }.sum
-      end
+                          discounted_price(discount, products)
+                        else
+                          products.map { |product| product['price'] }.sum
+                        end
     end
     discount_price.sum
   end
 
   def discounted_price(discount, products)
-    if discount['name'] == '2-for-1'
-      products[0..(products.count / 2).ceil()].map { |product| product['price'] }.sum
-    elsif discount['name'] == 'bulk-purchase'
-      adjustment = products.count >= 3 ? products.count : 0 
+    case discount['name']
+    when '2-for-1'
+      products[0..(products.count / 2).ceil].map { |product| product['price'] }.sum
+    when 'bulk-purchase'
+      adjustment = products.count >= 3 ? products.count : 0
       products.map { |product| product['price'] }.sum - adjustment
     end
   end
